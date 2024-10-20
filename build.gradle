@@ -28,8 +28,80 @@ dependencies {
 
     // Spring Security for handling authentication and security
     implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    implementation 'jakarta.validation:jakarta.validation-api:3.1.0'
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
 }
 
 test {
     useJUnitPlatform()
 }
+
+// Define platform-specific commands for MySQL
+def isWindows = System.getProperty('os.name').toLowerCase().contains('windows')
+def isMac = System.getProperty('os.name').toLowerCase().contains('mac')
+def isLinux = System.getProperty('os.name').toLowerCase().contains('linux')
+
+// Task to start MySQL
+task startMySQL {
+    group = 'MySQL Tasks'
+    description = 'Starts MySQL service based on the operating system.'
+
+    doLast {
+        if (isWindows) {
+            println 'Starting MySQL on Windows...'
+            exec {
+                commandLine 'cmd', '/c', 'net start mysql'
+            }
+        } else if (isMac) {
+            println 'Starting MySQL on macOS...'
+            exec {
+                commandLine 'brew', 'services', 'start', 'mysql'
+            }
+        } else if (isLinux) {
+            println 'Starting MySQL on Linux...'
+            exec {
+                commandLine 'sudo', 'systemctl', 'start', 'mysql'
+            }
+        } else {
+            throw new GradleException("Unsupported Operating System: ${System.getProperty('os.name')}")
+        }
+    }
+}
+
+// Task to stop MySQL
+task stopMySQL {
+    group = 'MySQL Tasks'
+    description = 'Stops MySQL service based on the operating system.'
+
+    doLast {
+        if (isWindows) {
+            println 'Stopping MySQL on Windows...'
+            exec {
+                commandLine 'cmd', '/c', 'net stop mysql'
+            }
+        } else if (isMac) {
+            println 'Stopping MySQL on macOS...'
+            exec {
+                commandLine 'brew', 'services', 'stop', 'mysql'
+            }
+        } else if (isLinux) {
+            println 'Stopping MySQL on Linux...'
+            exec {
+                commandLine 'sudo', 'systemctl', 'stop', 'mysql'
+            }
+        } else {
+            throw new GradleException("Unsupported Operating System: ${System.getProperty('os.name')}")
+        }
+    }
+}
+
+// Integrate with project build (for Spring Boot: bootRun task)
+tasks.named('bootRun') {
+    // Ensure MySQL is started before running the project
+    dependsOn startMySQL
+
+    // Ensure MySQL is stopped after the project stops
+    finalizedBy stopMySQL
+}
+
