@@ -100,7 +100,6 @@ task stopMySQL {
 tasks.named('bootRun') {
     // Ensure MySQL is started before running the project
     dependsOn startMySQL
-
     // Ensure MySQL is stopped after the project stops
     finalizedBy stopMySQL
 }
