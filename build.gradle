@@ -1,0 +1,48 @@
+plugins {
+    id 'org.springframework.boot' version '3.2.0' // Add the Spring Boot plugin
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE' // Add the Dependency Management plugin
+    id 'java'
+}
+
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Spring Boot BOM for dependency management
+    implementation platform('org.springframework.boot:spring-boot-dependencies:3.2.0') // Ensure you match the version
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    // Spring Web for REST APIs
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // Spring Data JPA for interacting with MySQL
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // MySQL Driver
+    runtimeOnly 'mysql:mysql-connector-java:8.0.33'
+
+    // Spring Security for handling authentication and security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    implementation 'jakarta.validation:jakarta.validation-api:3.1.0'
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+
+//    to monitor the application:
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // To resolve the NoClassDefFoundError for the issue in .signWith(SignatureAlgorithm.HS256, SECRET_KEY) : javax.xml.bind.DatatypeConverter class was part of the Java EE API
+    implementation 'javax.xml.bind:jaxb-api:2.3.1'
+    implementation 'org.glassfish.jaxb:jaxb-runtime:4.0.5'
+    implementation 'org.projectlombok:lombok:1.18.26' // Use the latest version
+    annotationProcessor 'org.projectlombok:lombok:1.18.28'
+
+}
+
+test {
+    useJUnitPlatform()
+}
